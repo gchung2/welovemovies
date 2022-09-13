@@ -13,17 +13,12 @@ const reduceMovies = reduceProperties("theater_id", {
 
 function list() {
   return knex("theaters as t")
-    .join("movies_theaters as mt", "mt.theater_id", "t.theater_id")
-    .join("movies as m", "m.movie_id", "mt.movie_id")
-    .select("t.*", "m.*")
-    .then(reduceMovies);
-}
-
-function read(theaterID) {
-  return knex("theaters").select("*").where({ theater_id: theaterID });
+    .join("movies_theaters as mt", "t.theater_id", "mt.theater_id")
+    .join("movies as m", "mt.movie_id", "m.movie_id")
+    .select("*")
+    .then(theaters => reduceMovies(theaters));
 }
 
 module.exports = {
   list,
-  read,
 };
