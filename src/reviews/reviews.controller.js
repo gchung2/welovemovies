@@ -12,6 +12,9 @@ async function reviewExists(req, res, next) {
   next({ status: 404, message: "Review cannot be found" });
 }
 
+function read(req, res) {
+  res.json({ data: response.locals.review })
+}
 
 async function destroy(req, res) {
   const { review } = res.locals;
