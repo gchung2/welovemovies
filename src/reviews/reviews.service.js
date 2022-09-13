@@ -1,4 +1,5 @@
 const knex = require("../db/connection");
+const mapProperties = require("../utils/map-properties")
 
 const addCritic = mapProperties({
   preferred_name: "critic.preferred_name",
