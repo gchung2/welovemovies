@@ -32,7 +32,7 @@ async function update(req, res) {
 }
 
 module.exports = {
-  destroy: [asyncErrorBoundary(reviewExists), asyncErrorBoundary(destroy)],
+  delete: [asyncErrorBoundary(reviewExists), asyncErrorBoundary(destroy)],
   read: [asyncErrorBoundary(reviewExists), asyncErrorBoundary(read)],
   update: [asyncErrorBoundary(reviewExists), asyncErrorBoundary(update)],
 };
