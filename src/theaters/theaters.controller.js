@@ -7,5 +7,5 @@ async function list(req, res) {
 }
 
 module.exports = {
-  list: asyncErrorBoundary(list),
+  list: [asyncErrorBoundary(list)]
 };

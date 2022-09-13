@@ -45,10 +45,10 @@ async function movieExists(req, res, next) {
     read: [asyncErrorBoundary(movieExists), asyncErrorBoundary(read)],
     readTheaters: [
       asyncErrorBoundary(movieExists),
-      asyncErrorBoundary(readTheaters),
+      asyncErrorBoundary(readTheaters)
     ],
     readReviews: [
       asyncErrorBoundary(movieExists),
-      asyncErrorBoundary(readReviews),
+      asyncErrorBoundary(readReviews)
     ],
   };

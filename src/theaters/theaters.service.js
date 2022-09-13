@@ -2,21 +2,42 @@ const knex = require("../db/connection");
 const reduceProperties = require("../utils/reduce-properties");
 
 const reduceMovies = reduceProperties("theater_id", {
-  movie_id: ["movies", null, "movie_id"],
-  title: ["movies", null, "title"],
-  rating: ["movies", null, "rating"],
-  description: ["movies", null, "description"],
-  runtime_in_minutes: ["movies", null, "runtime_in_minutes"],
-  image_url: ["movies", null, "image_url"],
-  is_showing: ["movies", null, "is_showing"],
-});
-
+  m_movie_id: ["movies", null, "movie_id"],
+  m_title: ["movies", null, "title"],
+  m_runtime_in_minutes: ["movies", null, "runtime_in_minutes"],
+  m_rating: ["movies", null, "rating"],
+  m_description: ["movies", null, "description"],
+  m_image_url: ["movies", null, "image_url"],
+  m_created_at: ["movies", null, "created_at"],
+  m_updated_at: ["movies", null, "updated_at"],
+  mt_is_showing: ["movies", null, "is_showing"],
+  mt_theater_id: ["movies", null, "theater_id"],
+})
 function list() {
   return knex("theaters as t")
-    .join("movies_theaters as mt", "t.theater_id", "mt.theater_id")
-    .join("movies as m", "mt.movie_id", "m.movie_id")
-    .select("*")
-    .then(theaters => reduceMovies(theaters));
+  .join("movies_theaters as mt", "t.theater_id", "mt.theater_id")
+  .join("movies as m", "m.movie_id", "mt.movie_id")
+  .where({ "mt.is_showing": true })
+  .select("t.theater_id")
+  .select("t.name")
+  .select("t.address_line_1")
+  .select("t.address_line_2")
+  .select("t.city")
+  .select("t.state")
+  .select("t.zip")
+  .select("t.created_at")
+  .select("t.updated_at")
+  .select("m.movie_id as m_movie_id")
+  .select("m.title as m_title")
+  .select("m.runtime_in_minutes as m_runtime_in_minutes")
+  .select("m.rating as m_rating")
+  .select("m.description as m_description")
+  .select("m.image_url as m_image_url")
+  .select("m.created_at as m_created_at")
+  .select("m.updated_at as m_updated_at")
+  .select("mt.is_showing as mt_is_showing")
+  .select("mt.theater_id as mt_theater_id")
+  .then(reduceMovies)
 }
 
 module.exports = {
