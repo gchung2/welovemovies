@@ -1,53 +1,36 @@
-
 const knex = require("../db/connection");
 
-function readReview(id, originalUrl) {
-    let requestType
-    (originalUrl.includes("movie")) ? requestType = "movie" : requestType = "review";
-    if (requestType === "movie") {
-        return (
-            knex("reviews as r")
-            .select("*")
-            .where({ movie_id: id })
-        )
-    }
-    // handles reviews route
-    return (
-        knex("reviews")
-        .select("*")
-        .where({ review_id: id })
-        .first()
-    )
+function readCritic(critic_id) {
+  return knex("critics").where({ critic_id }).first();
 }
 
-function readCritic(reviewId){
-    return (
-        knex("reviews as r")
-        .join("critics as c", "c.critic_id", "r.critic_id")
-        .select("c.*")
-        .where({ "r.review_id": reviewId})
-    )
+async function setCritic(review) {
+  review.critic = await readCritic(review.critic_id);
+  return review;
+}
+
+function read(reviewId) {
+  return knex("reviews").select("*").where({ review_id: reviewId }).first();
 }
 
 function updateReview(updatedReview) {
-    return (
-        knex("reviews")
-        .where({ review_id: updatedReview.review_id})
-        .update(updatedReview)
-    )
+  return knex("reviews")
+    .select("*")
+    .where({ review_id: updatedReview.review_id })
+    .update({
+      score: updatedReview.score,
+      content: updatedReview.content,
+    })
+    .then(() => read(updatedReview.review_id))
+    .then(setCritic);
 }
 
-function deleteReview(reviewId) {
-    return (
-        knex("reviews").select("*")
-        .where({ review_id: reviewId })
-        .del()
-    )
+function destroy(reviewId) {
+  return knex("reviews").where({ review_id: reviewId }).first().del();
 }
 
 module.exports = {
-    readReview,
-    readCritic,
-    updateReview,
-    deleteReview,
-}
+  read,
+  destroy,
+  updateReview,
+};
