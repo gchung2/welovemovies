@@ -1,5 +1,4 @@
-
-const service = require('./theatres.service');
+const service = require('./theaters.service');
 const asyncErrorBoundary = require('../errors/asyncErrorBoundary');
 
 async function list(req, res) {
