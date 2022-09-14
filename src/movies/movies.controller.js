@@ -1,9 +1,9 @@
-const moviesService = require("./movies.service");
+const service = require("./movies.service");
 const asyncErrorBoundary = require("../errors/asyncErrorBoundary");
 
 async function movieExists(req, res, next) {
     const { movieId } = req.params;
-    const movie = await moviesService.read(movieId);
+    const movie = await service.read(movieId);
     if (movie) {
       res.locals.movie = movie;
       return next();
@@ -30,13 +30,13 @@ async function read(req, res, next) {
   
   async function readTheaters(req, res, next) {
     const { movieId } = req.params;
-    const data = await moviesService.readTheaters(movieId);
+    const data = await service.readTheaters(movieId);
     res.json({ data });
   }
   
   async function readReviews(req, res) {
     const { movieId } = req.params;
-    const data = await moviesService.readReviews(movieId);
+    const data = await service.readReviews(movieId);
     res.json({ data });
   }
   
