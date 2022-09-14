@@ -1,37 +1,32 @@
-
 const service = require('./reviews.service');
 const asyncErrorBoundary = require('../errors/asyncErrorBoundary');
 
-async function reviewExists(req, res, next) {
-    const review = await service.read(req.params.reviewId);
-    if (review) {
-        res.locals.review = review;
-        return next();
-    }
-    return next({
-        status: 404,
-        message: 'Review cannot be found.'
-    });
-}
-
-async function update(req, res, next) {
-  const { content, score } = req.body.data;
-  res.locals.review.content = content;
-  res.locals.review.score = score;
-  const review = await service.update(res.locals.review);
-  const data = await service.readReviewWithCritic(req.params.reviewId);
-  console.log(review);
-  console.log(data);
-  res.json({ data: data[0] });
-}
-
-async function destroy(req, res) {
-    await service.destroy(res.locals.review.review_id);
+async function reviewExists(req, res, next){
+    const reviewId = Number(req.params.reviewId);
+    const foundReview = await service.searchReviews(reviewId);
+    if (foundReview){
+      res.locals.review = foundReview;
+      next();
+    } else next({status:404, message:"Review cannot be found."});
+  }
+  
+  /***** CRUDL *****/
+  async function update(req, res){
+    let {score, content} = req.body.data;
+    let existingReview = res.locals.review;
+    let updatedReview = {
+      ...existingReview, 
+      "content": content,
+      "score": score,
+    };
+    res.json({data: await service.updateReview(updatedReview)});
+  }
+  async function destroy(req, res){
+    await service.destroyReview(res.locals.review.review_id);
     res.sendStatus(204);
-}
-
-module.exports = {
-    update: [asyncErrorBoundary(reviewExists), update],
-    delete: [asyncErrorBoundary(reviewExists), destroy],
-    reviewExists,
-}
+  }
+  
+  module.exports={
+    update: [asyncErrorBoundary(reviewExists), asyncErrorBoundary(update)],
+    delete: [asyncErrorBoundary(reviewExists), asyncErrorBoundary(destroy)],
+  };

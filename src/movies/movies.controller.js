@@ -1,49 +1,46 @@
-const service = require('./movies.service');
 const asyncErrorBoundary = require('../errors/asyncErrorBoundary');
-const reviewExists = require('../reviews/reviews.controller');
+const movieService = require('./movies.service');
 
-async function movieExists(req, res, next) {
-    const movieId = req.params.movieId;
-    const movie = await service.read(movieId);
-   
-    if (movie) {
-        res.locals.movie = movie;
-        return next();
-    }
-    return next({
-        status: 404,
-        message: 'Movie cannot be found.'
-    })
+async function movieExists(req, res, next){
+  const movieId = Number(req.params.movieId);
+  const foundMovie = await movieService.searchMovies(movieId);
+  if (foundMovie){
+    res.locals.movie = foundMovie;
+    next();
+  } else next({status:404, message:"Movie cannot be found."});
+}
+async function isQuery(req, res, next){ // ensures the route request goes to the correct function
+  if(req.query.is_showing==="true")
+    next();
+  else if(req.originalUrl === '/movies') list(req, res);
+  else next({status:404, message:"No showings were found."}); 
 }
 
-async function list(req, res) {
-    const isShowing = req.query;
-    console.log(isShowing);
-    if (isShowing) {
-        const showList = await service.isShowing();
-       console.log(showList);
-        res.json({ data: showList })
-    } else {
-        res.json({ data: await service.list() })
-    }
+async function listShowings(req, res, next){
+  res.json({data: await movieService.listShowings() })
 }
 
-async function read(req, res) {
-    res.json({ data: res.locals.movie })
+async function listTheaters(req, res, next){
+  const movieId = res.locals.movie.movie_id;
+  res.json({data: await movieService.findTheatersForMovie(movieId)})
 }
 
-async function readTheaters(req, res) {
-    res.json({ data: await service.readTheaters(req.params.movieId) });
+async function listReviews(req, res, next){
+  const movieId = res.locals.movie.movie_id;
+  res.json({data: await movieService.addCriticToReviews(movieId)})
 }
 
-async function readReviews(req, res) {
-    res.json({ data: await service.readReviews(req.params.movieId) });
+async function list(req, res){
+   res.json({data: await movieService.list() })
+}
+async function read(req, res){
+  res.json({data: res.locals.movie});
 }
 
-
-module.exports = {
-    list: asyncErrorBoundary(list),
-    read: [asyncErrorBoundary(movieExists), read],
-    readTheaters: [asyncErrorBoundary(movieExists), readTheaters],
-    readReviews: [asyncErrorBoundary(reviewExists), readReviews],
+module.exports={
+  listShowings:[isQuery, asyncErrorBoundary(listShowings)],
+  listTheaters: [movieExists, asyncErrorBoundary(listTheaters)],
+  listReviews: [movieExists, asyncErrorBoundary(listReviews)],
+  read: [movieExists, asyncErrorBoundary(read)],
+  list: asyncErrorBoundary(list)
 }
