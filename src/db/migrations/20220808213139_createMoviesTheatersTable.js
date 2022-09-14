@@ -1,7 +1,5 @@
-
 exports.up = function(knex) {
     return knex.schema.createTable("movies_theaters", (table) => {
-        table.increments("moviesTheaters_id").primary();
         table.integer("movie_id").unsigned().notNullable();
         table
             .foreign("movie_id")
@@ -14,11 +12,10 @@ exports.up = function(knex) {
             .references("theater_id")
             .inTable("theaters")
             .onDelete("cascade");
-        table.boolean("is_showing")
-        table.timestamps(true, true);
-    });
-};
-
-exports.down = function(knex) {
+        table.boolean("is_showing");
+    })
+  };
+  
+  exports.down = function(knex) {
     return knex.schema.dropTable("movies_theaters");
-};
+  };
