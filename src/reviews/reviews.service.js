@@ -43,8 +43,8 @@ function update(updatedReview) {
       })
 }
 
-function destroy(reviewId) {
-  return knex("reviews").where({ review_id: reviewId }).first().del();
+function destroy(review_id) {
+  return knex("reviews").where({ review_id }).first().del();
 }
 
 module.exports = {

@@ -17,16 +17,16 @@ async function movieExists(req, res, next) {
   async function list(req, res) {
     const { is_showing } = req.query;
     if (is_showing) {
-      const data = await moviesService.listIsShowing();
-      return res.json({ data });
+      res.json({ data: await service.listIsShowings() })
+    } else {
+        res.json({ data: await service.list() })
     }
-    const data = await moviesService.list();
-    res.json({ data });
-  }
+}
   
-  function read(req, res, next) {
-    res.json({ data: res.locals.movie });
-  }
+async function read(req, res, next) {
+  const movie = res.locals.movie;
+  res.json({data: movie});
+}
   
   async function readTheaters(req, res, next) {
     const { movieId } = req.params;

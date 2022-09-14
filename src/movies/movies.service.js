@@ -9,30 +9,30 @@ const addCriticDetails = mapProperties({
 });
 
 function list() {
-  return knex("movies").select("*");
+  return knex("movies").select("*").groupBy('movies.movie_id');
 }
 
 function listIsShowing() {
-  return knex("movies as m")
-    .join("movies_theaters as mv", "m.movie_id", "mv.movie_id")
-    .select("m.*")
-    .where({ "mv.is_showing": true })
-    .groupBy("m.movie_id");;
+  return knex("movies")
+  .join("movies_theaters", "movies.movie_id", "movies_theaters.movie_id")
+  .select("movies.*")
+  .where( {"movies_theaters.is_showing": true} )
+  .groupBy("movies.movie_id")
 }
 
 function read(movieId) {
-  return knex("movies as m ")
-    .select("m.*")
+  return knex("movies")
+    .select("*")
     .where({ "movie_id": movieId })
+    .groupBy("movies.movie_id")
     .first();
 }
 
 function readTheaters(movieId) {
-  return knex("movies as m")
-  .join("movies_theaters as mt", "mt.movie_id", "m.movie_id")
-  .join("theaters as t", "t.theater_id", "mt.theater_id")
-  .select("t.*")
-  .where({"m.movie_id": movieId})
+  return knex("movies_theaters as mt")
+  .join("theaters as t", "mt.theater_id", "t.theater_id")
+  .select("*")
+  .where({movie_id: movieId, is_showing: true })
 }
   
 function readReviews(movieId) {
