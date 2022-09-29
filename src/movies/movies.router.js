@@ -5,7 +5,7 @@ const readReviews = require('../reviews/reviews.controller');
 
 router
     .route('/')
-    .get(controller.listShowings)
+    .get(controller.list)
     .all(methodNotAllowed);
 
 router
@@ -15,12 +15,12 @@ router
 
 router
     .route('/:movieId/theaters')
-    .get(controller.listTheaters)
+    .get(controller.readTheaters)
     .all(methodNotAllowed);
 
 router
     .route('/:movieId/reviews')
-    .get(controller.listReviews)
+    .get(controller.readReviews)
     .all(methodNotAllowed);
 
 

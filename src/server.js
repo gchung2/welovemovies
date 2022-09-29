@@ -1,17 +1,14 @@
-const knex = require("./db/connection");
-const express = require('express')
-const app = require('./app.js')
-const router = express.Router()
-const PORT = process.env.PORT || 5000;
+const { PORT = 5000 } = process.env;
 
-app.use('/', router);
+const app = require("./app");
+const knex = require("./db/connection");
+
+const listener = () => console.log(`Listening on Port ${PORT}!`);
 
 knex.migrate
   .latest()
-  .then((migrations)=> {
-    console.log("migrations", migrations[0])
-   
-    app.listen(PORT, () => console.log(`Server running on ${PORT} `))
+  .then((migrations) => {
+    console.log("migrations", migrations);
+    app.listen(PORT, listener);
   })
   .catch(console.error);
-module.exports = app
